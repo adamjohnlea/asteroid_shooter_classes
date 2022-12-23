@@ -148,6 +148,7 @@ ship = Ship(ship_group)
 asteroid_timer = pygame.event.custom_type()
 pygame.time.set_timer(asteroid_timer, 400)
 
+# Background music
 background_sound = pygame.mixer.Sound('./sounds/music.wav')
 background_sound.play(loops=-1)
 background_sound.set_volume(0.2)
