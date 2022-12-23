@@ -36,10 +36,16 @@ class Ship(pygame.sprite.Sprite):
             Laser(self.rect.midtop, laser_group)
         pygame.event.pump()
 
+    def asteroid_collisions(self):
+        if pygame.sprite.spritecollide(self, asteroid_group, True):
+            pygame.quit()
+            sys.exit()
+
     def update(self):
         self.time_laser()
         self.input_position()
         self.shoot_laser()
+        self.asteroid_collisions()
 
 
 class Laser(pygame.sprite.Sprite):
@@ -52,9 +58,14 @@ class Laser(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(0, -1)
         self.speed = 600
 
+    def asteroid_collision(self):
+        if pygame.sprite.spritecollide(self, asteroid_group, True):
+            pygame.sprite.Sprite.kill(self)
+
     def update(self):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
+        self.asteroid_collision()
 
 
 class Asteroid(pygame.sprite.Sprite):
