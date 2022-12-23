@@ -31,11 +31,13 @@ class Ship(pygame.sprite.Sprite):
                 self.can_shoot = True
 
     def shoot_laser(self):
+        laser_sound = pygame.mixer.Sound('./sounds/laser.ogg')
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_SPACE] and self.can_shoot:
             self.can_shoot = False
             self.shoot_time = pygame.time.get_ticks()
             Laser(self.rect.midtop, laser_group)
+            laser_sound.play()
         pygame.event.pump()
 
     def asteroid_collisions(self):
@@ -62,7 +64,9 @@ class Laser(pygame.sprite.Sprite):
         self.speed = 600
 
     def asteroid_collision(self):
+        explosion_sound = pygame.mixer.Sound('./sounds/explosion.wav')
         if pygame.sprite.spritecollide(self, asteroid_group, True, pygame.sprite.collide_mask):
+            explosion_sound.play()
             self.kill()
 
     def update(self):
@@ -144,6 +148,9 @@ ship = Ship(ship_group)
 asteroid_timer = pygame.event.custom_type()
 pygame.time.set_timer(asteroid_timer, 400)
 
+background_sound = pygame.mixer.Sound('./sounds/music.wav')
+background_sound.play(loops=-1)
+background_sound.set_volume(0.2)
 
 # Game Loop
 while True:  # run forever -> keeps our game going
