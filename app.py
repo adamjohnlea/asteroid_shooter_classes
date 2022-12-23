@@ -60,11 +60,13 @@ class Laser(pygame.sprite.Sprite):
 
     def asteroid_collision(self):
         if pygame.sprite.spritecollide(self, asteroid_group, True):
-            pygame.sprite.Sprite.kill(self)
+            self.kill()
 
     def update(self):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
+        if self.rect.bottom < 0:
+            self.kill()
         self.asteroid_collision()
 
 
@@ -94,6 +96,8 @@ class Asteroid(pygame.sprite.Sprite):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
         self.rotate()
+        if self.rect.top > WINDOW_HEIGHT:
+            self.kill()
 
 
 class Text:
