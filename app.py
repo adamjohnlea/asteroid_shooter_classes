@@ -4,9 +4,9 @@ import sys
 
 class Ship(pygame.sprite.Sprite):
 
-    def __init__(self):
+    def __init__(self, groups):
         # we have to init the parent class
-        super().__init__()
+        super().__init__(groups)
         # we need a surface (image)
         self.image = pygame.image.load('./graphics/ship.png').convert_alpha()
         # we need a rect
@@ -29,9 +29,9 @@ class Ship(pygame.sprite.Sprite):
     def shoot_laser(self):
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_SPACE] and self.can_shoot:
-            print('laser shot')
             self.can_shoot = False
             self.shoot_time = pygame.time.get_ticks()
+            Laser(self.rect.midtop, laser_group)
         pygame.event.pump()
 
     def update(self):
@@ -41,10 +41,18 @@ class Ship(pygame.sprite.Sprite):
 
 
 class Laser(pygame.sprite.Sprite):
-    def __init__(self, spawn_pos):
-        super().__init__()
+    def __init__(self, spawn_pos, groups):
+        super().__init__(groups)
         self.image = pygame.image.load('./graphics/laser.png').convert_alpha()
         self.rect = self.image.get_rect(midbottom=spawn_pos)
+
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.direction = pygame.math.Vector2(0, -1)
+        self.speed = 600
+
+    def update(self):
+        self.pos += self.direction * self.speed * dt
+        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
 
 pygame.init()
@@ -63,12 +71,8 @@ asteroid_group = pygame.sprite.Group()
 
 # Sprite creation
 # Ship
-ship = Ship()
-ship_group.add(ship)
+ship = Ship(ship_group)
 
-# Laser
-laser = Laser(ship.rect.midtop)
-laser_group.add(laser)
 
 # Game Loop
 while True:  # run forever -> keeps our game going
@@ -85,10 +89,11 @@ while True:  # run forever -> keeps our game going
                 sys.exit()
 
     # Delta time
-    dt = clock.tick() / 100
+    dt = clock.tick() / 1000
 
     # Updates
     ship_group.update()
+    laser_group.update()
 
     # Background
     display_surface.blit(bg_surf, (0, 0))
