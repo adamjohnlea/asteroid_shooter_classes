@@ -1,5 +1,7 @@
 import pygame
 import sys
+from random import randint
+from random import uniform
 
 
 class Ship(pygame.sprite.Sprite):
@@ -55,6 +57,21 @@ class Laser(pygame.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
 
+class Asteroid(pygame.sprite.Sprite):
+    def __init__(self, pos, groups):
+        super().__init__(groups)
+        self.image = pygame.image.load('./graphics/meteor.png').convert_alpha()
+        self.rect = self.image.get_rect(center=pos)
+
+        self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.direction = pygame.math.Vector2(uniform(-0.5, 0.5), 1)
+        self.speed = randint(400, 600)
+
+    def update(self):
+        self.pos += self.direction * self.speed * dt
+        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
+
+
 pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -73,6 +90,9 @@ asteroid_group = pygame.sprite.Group()
 # Ship
 ship = Ship(ship_group)
 
+# Asteroid timer
+asteroid_timer = pygame.event.custom_type()
+pygame.time.set_timer(asteroid_timer, 400)
 
 # Game Loop
 while True:  # run forever -> keeps our game going
@@ -81,6 +101,10 @@ while True:  # run forever -> keeps our game going
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == asteroid_timer:
+            asteroid_y_pos = randint(-150, -50)
+            asteroid_x_pos = randint(-100, WINDOW_WIDTH + 100)
+            Asteroid((asteroid_x_pos, asteroid_y_pos), groups=asteroid_group)
 
     # Keyboard input
         if event.type == pygame.KEYDOWN:
@@ -94,6 +118,7 @@ while True:  # run forever -> keeps our game going
     # Updates
     ship_group.update()
     laser_group.update()
+    asteroid_group.update()
 
     # Background
     display_surface.blit(bg_surf, (0, 0))
@@ -101,6 +126,7 @@ while True:  # run forever -> keeps our game going
     # Graphics
     ship_group.draw(display_surface)
     laser_group.draw(display_surface)
+    asteroid_group.draw(display_surface)
 
     # Draw the frame
     pygame.display.update()
