@@ -72,6 +72,28 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
 
+class Score:
+    def __init__(self):
+        self.font = pygame.font.Font('./graphics/subatomic.ttf', 30)
+
+    def display(self):
+        score_text = f'Score: {pygame.time.get_ticks() // 1000}'
+        text_surf = self.font.render(score_text, True, 'white')
+        text_rect = text_surf.get_rect(midbottom=(WINDOW_WIDTH/2, WINDOW_HEIGHT - 80))
+        display_surface.blit(text_surf, text_rect)
+
+
+class Title:
+    def __init__(self):
+        self.font = pygame.font.Font('./graphics/subatomic.ttf', 30)
+
+    def display(self):
+        score_text = "-= ASTEROID SHOOTER=-"
+        text_surf = self.font.render(score_text, True, 'white')
+        text_rect = text_surf.get_rect(midtop=(WINDOW_WIDTH/2, text_surf.get_height()))
+        display_surface.blit(text_surf, text_rect)
+
+
 pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -93,6 +115,10 @@ ship = Ship(ship_group)
 # Asteroid timer
 asteroid_timer = pygame.event.custom_type()
 pygame.time.set_timer(asteroid_timer, 400)
+
+# Score
+score = Score()
+title = Title()
 
 # Game Loop
 while True:  # run forever -> keeps our game going
@@ -122,6 +148,9 @@ while True:  # run forever -> keeps our game going
 
     # Background
     display_surface.blit(bg_surf, (0, 0))
+
+    score.display()
+    title.display()
 
     # Graphics
     ship_group.draw(display_surface)
